@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+.venv/
+airflow_env/
+
+# Airflow local/runtime files
+airflow/logs/
+airflow/airflow.db
+airflow/airflow.cfg
+airflow/simple_auth_manager_passwords.json.generated
+
+# Project logs
+logs/*.log
+
+# Generated Spark/analytics outputs
+outputs/
+
+# Local test/training data
+data/landing/
+data/raw/
+data/rejected/
+
+# Telecom daily dataset
+data/sms-call-internet-mi-*.csv
+
+
+# Keep static reference data
+# data/reference/milano-grid.geojson
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
