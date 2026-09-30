@@ -1,0 +1,36 @@
+{
+  "model": "ML4 generalized historical anomaly baseline",
+  "baseline": {
+    "type": "grid_id + hour_of_day historical median",
+    "high_threshold": 0.5,
+    "low_threshold": -0.5,
+    "score": "absolute percentage deviation"
+  },
+  "bucket_history": {
+    "minimum_observations": 4,
+    "maximum_observations": 7,
+    "average_observations": 6.999975,
+    "bucket_count": 240000
+  },
+  "comparison": {
+    "total_records": 1679994,
+    "np3_alerts": 13540,
+    "ml3_risks": 17411,
+    "ml4_high_anomalies": 34793,
+    "all_three": 0,
+    "np3_ml3_only": 0,
+    "np3_ml4_only": 2202,
+    "ml3_ml4_only": 1240,
+    "np3_only": 11338,
+    "ml3_only": 16171,
+    "ml4_only": 31351,
+    "none_flagged": 1617692,
+    "ml3_ml4_agreement": 0.9704022752462211,
+    "np3_ml4_agreement": 0.9738516923274726
+  },
+  "outputs": {
+    "anomaly_scores": "/mnt/d/Network Operations Predictive System/ML/ML4/network_anomaly_scores.csv",
+    "three_way_comparison": "/mnt/d/Network Operations Predictive System/ML/ML4/ml4_three_way_comparison.csv",
+    "report": "/mnt/d/Network Operations Predictive System/ML/ML4/ml4_anomaly_report.md"
+  }
+}

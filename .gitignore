@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 *.pyo
 
+
 # Virtual environments
 venv/
 .venv/
@@ -38,3 +39,15 @@ Thumbs.db
 .vscode/
 .idea/
 
+#.env files
+.env
+
+# Databases
+*.db
+
+# Trainer guide
+Phase 1 Project - Network Operations Predictive Intelligence - Trainer Guide (1).pdf
+
+# Large ML outputs
+ML/ML4/ml4_three_way_comparison.csv
+ML/ML4/network_anomaly_scores.csv
