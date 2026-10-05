@@ -662,8 +662,6 @@ def get_grid_features(
     )
 
 
-# In api/service.py, change the ML3 prediction score column handling to:
-
 def _parse_prediction_score(row: dict) -> float:
     """Read the ML3 risk probability from the prediction output."""
     value = row.get("risk_probability")
