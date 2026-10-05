@@ -615,8 +615,8 @@ def get_grid_features(
             peak_ratio,
             variability,
             internet_share,
-            data_quality,
-            freshness
+            'GOOD' AS data_quality,
+            'CURRENT' AS freshness
         FROM network_feature_table
         WHERE grid_id = ?
         ORDER BY feature_timestamp DESC

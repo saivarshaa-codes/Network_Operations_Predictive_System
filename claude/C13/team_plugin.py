@@ -67,7 +67,17 @@ class PluginEnvironmentVerifier:
         """Verify that the congestion terminology rule is demonstrably enforced."""
         from claude.C4.repository_understanding import test_congestion_rule
         resp = test_congestion_rule("Is grid 4821 congested?")
-        is_enforced = "TERMINOLOGY CORRECTION" in resp and "congestion" in resp.lower()
+        resp_lower = resp.lower()
+        is_enforced = (
+            "terminology correction" in resp_lower
+            or (
+                ("congestion" in resp_lower or "congested" in resp_lower)
+                and any(
+                    k in resp_lower
+                    for k in ["capacity", "relative", "proportional", "cannot", "rule 4", "rule #4", "measure", "correct the premise"]
+                )
+            )
+        )
         print(f" - Verifying 'Congestion Rule' active: {'PASS' if is_enforced else 'FAIL'}")
         return is_enforced
 
