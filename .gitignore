@@ -51,3 +51,14 @@ Phase 1 Project - Network Operations Predictive Intelligence - Trainer Guide (1)
 # Large ML outputs
 ML/ML4/ml4_three_way_comparison.csv
 ML/ML4/network_anomaly_scores.csv
+
+# Parquet files
+*.parquet
+ 
+# Spark/Hadoop artifacts
+*.crc
+_SUCCESS
+ 
+# Airflow DB files
+*.db-wal
+*.db-shm

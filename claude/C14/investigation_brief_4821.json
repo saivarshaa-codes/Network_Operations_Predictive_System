@@ -1,0 +1,41 @@
+{
+  "grid_id": 4821,
+  "timestamp": "2026-10-04T15:09:23.973445+00:00",
+  "severity": "ATTENTION",
+  "evidence": [
+    {
+      "claim": "Warehouse ingestion and pipeline execution status",
+      "value": "SUCCESS",
+      "source_tool": "pipeline_status"
+    },
+    {
+      "claim": "Warehouse data freshness rating",
+      "value": "VERY_STALE",
+      "source_tool": "pipeline_status"
+    },
+    {
+      "claim": "Grid 4821 geographic centroid in Milan",
+      "value": "Lat: 45.4595, Lon: 9.0728",
+      "source_tool": "grid_location"
+    },
+    {
+      "claim": "Grid 4821 current total activity measure (unitless proportional index)",
+      "value": 254.97,
+      "source_tool": "grid_activity"
+    },
+    {
+      "claim": "Grid 4821 ML risk prediction score",
+      "value": 0.0422,
+      "source_tool": "anomaly_score"
+    }
+  ],
+  "uncertainty": [
+    "PIPELINE DEGRADATION: Data freshness is 'VERY_STALE' with warnings: Analytics status record is VERY_STALE.. Severity assessment is strictly constrained because telemetry lags current time.",
+    "Telemetry contains no physical capacity, latency, or throughput figures. Congestion cannot be claimed."
+  ],
+  "recommended_checks": [
+    "Verify Airflow DAG scheduler and run history to clear warehouse staleness.",
+    "Inspect physical site alarms on transceivers servicing Milan grid cell 4821.",
+    "Check spatial neighbours using /network/grid/4821/neighbours to evaluate geographic spread."
+  ]
+}

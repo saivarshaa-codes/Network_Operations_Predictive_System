@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json.schemastore.org/partial-claude-code-permissions.json",
+  "version": "1.0.0",
+  "policy_name": "network-operations-predictive-system-guardrails",
+  "permissions": {
+    "allow": [
+      "read:docs/**",
+      "read:api/**",
+      "read:spark/**",
+      "read:ML/**",
+      "read:frontend/**",
+      "read:tests/**",
+      "execute:pytest tests/**",
+      "execute:python -m pytest",
+      "execute:npm test",
+      "execute:git status",
+      "execute:git diff",
+      "execute:git log",
+      "execute:ruff format",
+      "execute:ruff check",
+      "execute:black --check"
+    ],
+    "ask": [
+      "edit:airflow/**",
+      "edit:api/models.py",
+      "edit:requirements.txt",
+      "edit:package.json",
+      "execute:pip install *",
+      "execute:npm install *",
+      "execute:python warehouse/build_warehouse.py",
+      "execute:alembic upgrade *"
+    ],
+    "deny": [
+      "delete:data/**",
+      "write:data/raw/**",
+      "read:.env*",
+      "read:**/*secret*",
+      "read:**/*password*",
+      "execute:rm -rf *",
+      "execute:DROP TABLE *",
+      "execute:TRUNCATE *",
+      "execute:DELETE FROM *",
+      "execute:git push --force"
+    ]
+  },
+  "rationale": {
+    "deny": {
+      "delete:data/**": "Prevents catastrophic data loss across landing, raw, processed, and reference GeoJSON.",
+      "write:data/raw/**": "Raw telecom telemetry CSVs are legally and operationally immutable audit records.",
+      "read:.env*": "Enforces least-privilege boundary to protect API keys and tokens from exfiltration."
+    },
+    "ask": {
+      "edit:airflow/**": "Airflow DAG edits impact production ingestion and batch scheduling; requires human sign-off.",
+      "edit:requirements.txt": "Dependency modifications introduce version drift, supply-chain, or compilation risks."
+    }
+  }
+}

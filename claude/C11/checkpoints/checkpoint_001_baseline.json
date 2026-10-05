@@ -1,0 +1,34 @@
+{
+  "checkpoint_name": "checkpoint_001_baseline",
+  "timestamp": "2026-10-05T14:35:04.950963+00:00",
+  "config": {
+    "anomaly_threshold": 0.65,
+    "min_growth_threshold": 1.2,
+    "version": "v1.0-prod"
+  },
+  "operational_state": {
+    "flagged_cells_count": 245896,
+    "top_5_cells": [
+      {
+        "grid_id": "1051",
+        "risk_score": 0.9992796121178052
+      },
+      {
+        "grid_id": "1051",
+        "risk_score": 0.9992796121178052
+      },
+      {
+        "grid_id": "1052",
+        "risk_score": 0.9992796121178052
+      },
+      {
+        "grid_id": "1052",
+        "risk_score": 0.9992796121178052
+      },
+      {
+        "grid_id": "1070",
+        "risk_score": 0.9992796121178052
+      }
+    ]
+  }
+}

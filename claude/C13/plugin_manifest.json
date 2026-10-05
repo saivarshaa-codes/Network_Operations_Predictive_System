@@ -1,0 +1,57 @@
+{
+  "name": "network-operations-engineering-plugin",
+  "version": "1.0.0",
+  "description": "Standardized Claude Code configuration, rules, skills, commands, and hooks for the Network Operations Predictive Intelligence System.",
+  "author": "Network Operations & Platform Engineering Lead",
+  "license": "Internal-Proprietary",
+  "rules": {
+    "source": "CLAUDE.md",
+    "enforced_invariants": [
+      "canonical_grain_uniqueness",
+      "country_code_aggregation",
+      "unitless_activity_measures",
+      "prohibit_congestion_claims",
+      "geojson_cellid_join",
+      "as_of_temporal_window"
+    ]
+  },
+  "skills": [
+    {
+      "name": "network-anomaly-analysis",
+      "path": "claude/C8/skills/network_anomaly_analysis/SKILL.md"
+    },
+    {
+      "name": "pipeline-troubleshooting",
+      "path": "claude/C8/skills/pipeline_troubleshooting/SKILL.md"
+    },
+    {
+      "name": "telecom-data-quality",
+      "path": "claude/C8/skills/telecom_data_quality/SKILL.md"
+    }
+  ],
+  "commands": [
+    "/check-pipeline",
+    "/explain-grid",
+    "/review-anomaly",
+    "/test-api",
+    "/network-health"
+  ],
+  "hooks": [
+    {
+      "event": "post_edit",
+      "pattern": "spark/**,ML/**",
+      "action": "check_grain_and_leakage"
+    },
+    {
+      "event": "pre_action",
+      "pattern": "airflow/**",
+      "action": "require_confirmation"
+    }
+  ],
+  "mcp_servers": {
+    "network-intelligence": {
+      "command": "python",
+      "args": ["claude/C12/network_mcp_server.py"]
+    }
+  }
+}
