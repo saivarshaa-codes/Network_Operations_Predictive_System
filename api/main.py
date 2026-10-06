@@ -15,6 +15,8 @@ from .models import (
     GridFeatureResponse,
     PredictionRequest,
     PredictionResponse,
+    NetworkInsightRequest,
+    NetworkInsightResponse,
     PipelineStatusResponse,
     GridLocationResponse,
     GridNeighboursResponse,
@@ -27,6 +29,7 @@ from .service import (
     get_alerts,
     get_grid_features,
     predict_risk,
+    get_network_insight,
     get_pipeline_status,
     get_grid_location,
     get_grid_neighbours,
@@ -301,6 +304,44 @@ def network_predict_risk(
             status_code=500,
             detail=(
                 "Prediction data source error: "
+                f"{exc}"
+            ),
+        ) from exc
+
+
+@app.post(
+    "/network/insight",
+    response_model=NetworkInsightResponse,
+    summary="Generate Claude network insight for grid",
+    tags=["Network"],
+)
+def network_insight(
+    request: NetworkInsightRequest,
+    connection: sqlite3.Connection = Depends(get_db),
+) -> NetworkInsightResponse:
+
+    try:
+        return get_network_insight(
+            connection=connection,
+            grid_id=request.grid_id,
+            timestamp=request.timestamp,
+        )
+
+    except LookupError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=str(exc),
+        ) from exc
+
+    except (
+        FileNotFoundError,
+        sqlite3.Error,
+        RuntimeError,
+    ) as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "Insight service error: "
                 f"{exc}"
             ),
         ) from exc

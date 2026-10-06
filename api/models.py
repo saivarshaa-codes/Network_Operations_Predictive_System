@@ -93,6 +93,20 @@ class PredictionResponse(BaseModel):
     feature_timestamp: datetime
     explanation_note: str
 
+
+class NetworkInsightRequest(BaseModel):
+    grid_id: int
+    timestamp: datetime | None = None
+
+
+class NetworkInsightResponse(BaseModel):
+    grid_id: str
+    feature_timestamp: datetime | None = None
+    severity: str
+    insight: str
+    evidence: dict
+    model_version: str = "claude-sonnet-4-6"
+
 class PipelineStatusResponse(BaseModel):
     healthy: bool
     run_id: str

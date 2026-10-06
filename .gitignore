@@ -1,64 +1,165 @@
+# ============================================================
+# Network Operations Predictive System
+# Git Ignore Rules
+# ============================================================
+
+# ------------------------------------------------------------
+# Environment / Secrets
+# ------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# ------------------------------------------------------------
 # Python
+# ------------------------------------------------------------
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
+*.so
 
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
 
-# Virtual environments
-venv/
 .venv/
-airflow_env/
+venv/
+env/
+ENV/
 
-# Airflow local/runtime files
+.ipynb_checkpoints/
+
+# ------------------------------------------------------------
+# Node / React / Vite
+# ------------------------------------------------------------
+node_modules/
+frontend/node_modules/
+
+dist/
+build/
+frontend/dist/
+frontend/build/
+
+.vite/
+frontend/.vite/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ------------------------------------------------------------
+# Airflow runtime artifacts
+# ------------------------------------------------------------
 airflow/logs/
+airflow/logs/**
+
+# Airflow local/runtime state
+airflow/*.pid
+airflow/*.db
 airflow/airflow.db
-airflow/airflow.cfg
-airflow/simple_auth_manager_passwords.json.generated
 
-# Project logs
-logs/*.log
+# ------------------------------------------------------------
+# Application / pipeline runtime logs
+# ------------------------------------------------------------
+logs/
+*.log
 
-# Generated Spark/analytics outputs
+# ------------------------------------------------------------
+# Generated pipeline outputs
+# ------------------------------------------------------------
 outputs/
 
-# Local test/training data
-data/landing/
-data/raw/
-data/rejected/
+# Generated Spark / Parquet data
+*.parquet
+*.parquet.crc
+*.crc
 
-# Telecom daily dataset
-data/sms-call-internet-mi-*.csv
+# Spark temporary/runtime directories
+spark-warehouse/
+.metastore/
+checkpoint/
+_checkpoints/
 
-
-# Keep static reference data
-# data/reference/milano-grid.geojson
-
-# OS/editor files
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-
-#.env files
-.env
-
-# Databases
+# ------------------------------------------------------------
+# Generated analytical warehouse
+# ------------------------------------------------------------
 *.db
+*.sqlite
+*.sqlite3
 
-# Trainer guide
-Phase 1 Project - Network Operations Predictive Intelligence - Trainer Guide (1).pdf
+# Keep the directory structure if needed
+!data/warehouse/.gitkeep
+!warehouse/.gitkeep
 
-# Large ML outputs
+# ------------------------------------------------------------
+# Generated ML artifacts
+# ------------------------------------------------------------
+ML/**/outputs/
+ML/**/*.pkl
+ML/**/*.joblib
+
+# Generated ML evaluation / prediction artifacts
+ML/ML3/outputs/
+ML/ML4/ml4_anomaly_evaluation.json
 ML/ML4/ml4_three_way_comparison.csv
 ML/ML4/network_anomaly_scores.csv
 
-# Parquet files
-*.parquet
- 
-# Spark/Hadoop artifacts
-*.crc
-_SUCCESS
- 
-# Airflow DB files
-*.db-wal
-*.db-shm
+# ------------------------------------------------------------
+# Temporary files
+# ------------------------------------------------------------
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ------------------------------------------------------------
+# IDE / editor
+# ------------------------------------------------------------
+.vscode/
+.idea/
+*.code-workspace
+
+# ------------------------------------------------------------
+# Local OS / tooling
+# ------------------------------------------------------------
+*.pid
+*.seed
+
+# ------------------------------------------------------------
+# Project reference/training material not part of final repo
+# ------------------------------------------------------------
+Phase 1 Project - Network Operations Predictive Intelligence - Trainer Guide (1).pdf
+
+
+airflow/simple_auth_manager_passwords.json.generated
+
+# ------------------------------------------------------------
+# Local / source activity datasets
+# ------------------------------------------------------------
+data/landing/
+data/raw/
+data/rejected/
+data/sms-call-internet-mi-*.csv
+
+# Generated processed data
+data/processed/activity/
+data/processed/hourly_grid_summary/
+data/processed/dashboard_summary/
+
+# Local exploratory notebooks
+ML/ML4/test.ipynb
+Phase1/np1.ipynb
+
+airflow/*.db-wal

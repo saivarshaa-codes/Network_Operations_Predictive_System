@@ -84,3 +84,18 @@ export function predictRisk(gridId, timestamp = "") {
     body: JSON.stringify(body),
   });
 }
+
+export function getNetworkInsight(gridId, timestamp = "") {
+  const body = {
+    grid_id: Number(gridId),
+  };
+
+  if (timestamp) {
+    body.timestamp = timestamp;
+  }
+
+  return request("/network/insight", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}

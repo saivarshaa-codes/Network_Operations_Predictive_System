@@ -17,6 +17,7 @@ from .models import (
     AlertPoint,
     GridFeatureResponse,
     PredictionResponse,
+    NetworkInsightResponse,
     PipelineStatusResponse,
     GridLocationResponse,
     GridNeighbour,
@@ -939,6 +940,68 @@ def predict_risk(
         ),
         feature_timestamp=prediction_timestamp,
         explanation_note=explanation,
+    )
+
+
+def get_network_insight(
+    connection: sqlite3.Connection,
+    grid_id: int,
+    timestamp: datetime | None = None,
+) -> NetworkInsightResponse:
+
+    from claude.C1.network_insights import generate_network_insight
+
+    risk = predict_risk(
+        connection=connection,
+        grid_id=grid_id,
+        timestamp=timestamp,
+    )
+
+    feat = get_grid_features(
+        connection=connection,
+        grid_id=grid_id,
+    )
+
+    act = get_grid_activity(
+        connection=connection,
+        grid_id=grid_id,
+    )
+    cur_act = act.data[-1].total_activity if act.data else 0.0
+
+    target_ts = timestamp or feat.feature_timestamp
+
+    evidence = {
+        "grid_id": grid_id,
+        "timestamp": str(target_ts),
+        "current_activity": round(float(cur_act), 2),
+        "baseline_activity": round(float(feat.avg_activity), 2),
+        "activity_growth": round(float(feat.activity_growth), 4),
+        "peak_ratio": round(float(feat.peak_ratio), 4),
+        "variability": round(float(feat.variability), 4),
+        "internet_share": round(float(feat.internet_share), 4),
+        "anomaly_score": round(float(risk.risk_score), 4),
+        "anomaly_direction": risk.risk_level.lower(),
+    }
+
+    try:
+        raw_insight = generate_network_insight(evidence)
+    except Exception as exc:
+        raise RuntimeError(f"Claude reasoning layer error: {exc}") from exc
+
+    severity = "ATTENTION"
+    for line in raw_insight.splitlines():
+        trimmed = line.strip().upper()
+        if trimmed in ("NORMAL", "ATTENTION", "HIGH"):
+            severity = trimmed
+            break
+
+    return NetworkInsightResponse(
+        grid_id=str(grid_id),
+        feature_timestamp=target_ts,
+        severity=severity,
+        insight=raw_insight,
+        evidence=evidence,
+        model_version="claude-sonnet-4-6",
     )
 
 

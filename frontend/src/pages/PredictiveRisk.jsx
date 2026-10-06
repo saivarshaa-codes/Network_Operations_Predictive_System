@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { predictRisk } from "../services/api";
+import { getNetworkInsight, predictRisk } from "../services/api";
 import "./PredictiveRisk.css";
 
 function PredictiveRisk() {
@@ -8,6 +8,9 @@ function PredictiveRisk() {
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [insight, setInsight] = useState(null);
+  const [insightLoading, setInsightLoading] = useState(false);
+  const [insightError, setInsightError] = useState("");
 
  function convertUserTimestampToISO(value) {
   const match = value.match(
@@ -75,6 +78,8 @@ function PredictiveRisk() {
     setLoading(true);
     setError("");
     setPrediction(null);
+    setInsight(null);
+    setInsightError("");
 
     try {
       const result = await predictRisk(
@@ -90,6 +95,74 @@ function PredictiveRisk() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleGenerateInsight() {
+    if (!prediction) {
+      return;
+    }
+
+    setInsightLoading(true);
+    setInsightError("");
+
+    try {
+      const result = await getNetworkInsight(
+        prediction.grid_id,
+        prediction.feature_timestamp || ""
+      );
+      setInsight(result);
+    } catch (err) {
+      setInsightError(
+        err.message || "Unable to retrieve Claude network insight."
+      );
+    } finally {
+      setInsightLoading(false);
+    }
+  }
+
+  function parseInsightText(rawText) {
+    if (!rawText) return null;
+    const lines = rawText.split("\n");
+    const sections = {
+      severity: "",
+      evidence: [],
+      interpretation: [],
+      nextChecks: [],
+    };
+    let current = null;
+
+    for (const rawLine of lines) {
+      const trimmed = rawLine.trim();
+      const upper = trimmed.toUpperCase();
+      if (upper === "SEVERITY") {
+        current = "severity";
+        continue;
+      }
+      if (upper === "EVIDENCE") {
+        current = "evidence";
+        continue;
+      }
+      if (upper === "INTERPRETATION") {
+        current = "interpretation";
+        continue;
+      }
+      if (upper === "NEXT CHECKS") {
+        current = "nextChecks";
+        continue;
+      }
+
+      if (current === "severity" && !sections.severity && trimmed) {
+        sections.severity = trimmed;
+      } else if (current === "evidence" && trimmed) {
+        sections.evidence.push(trimmed);
+      } else if (current === "interpretation" && trimmed) {
+        sections.interpretation.push(trimmed);
+      } else if (current === "nextChecks" && trimmed) {
+        sections.nextChecks.push(trimmed);
+      }
+    }
+
+    return sections;
   }
 
   function formatScore(score) {
@@ -117,6 +190,8 @@ function PredictiveRisk() {
 
     return Math.min(Math.max(numericScore * 100, 0), 100);
   }
+
+  const parsedSections = parseInsightText(insight?.insight);
 
   return (
     <main className="dashboard predictive-risk-page">
@@ -431,45 +506,107 @@ function PredictiveRisk() {
                 <h3>Explain with AI</h3>
               </div>
 
-              <span className="future-badge">
-                LATER PHASE
+              <span className={insight ? "future-badge active" : "future-badge"}>
+                {insight ? "CLAUDE ONLINE" : "INTELLIGENCE READY"}
               </span>
             </div>
 
-            <div className="ai-placeholder">
+            {insight ? (
+              <div className="ai-insight-content">
+                <div className="ai-insight-header">
+                  <div className="ai-insight-severity-row">
+                    <span className="ai-section-label">ASSESSED SEVERITY</span>
+                    <span className={`ai-severity-badge severity-${(insight.severity || "attention").toLowerCase()}`}>
+                      {insight.severity || "ATTENTION"}
+                    </span>
+                  </div>
+                  <span className="ai-insight-model">{insight.model_version}</span>
+                </div>
 
-              <div className="ai-orbit">
-                <div className="ai-core">AI</div>
+                {parsedSections?.interpretation?.length > 0 && (
+                  <div className="ai-section">
+                    <span className="ai-section-title">OPERATIONAL INTERPRETATION</span>
+                    <p className="ai-section-body">
+                      {parsedSections.interpretation.join(" ")}
+                    </p>
+                  </div>
+                )}
+
+                {parsedSections?.evidence?.length > 0 && (
+                  <div className="ai-section">
+                    <span className="ai-section-title">OBSERVED EVIDENCE</span>
+                    <ul className="ai-evidence-list">
+                      {parsedSections.evidence.map((item, idx) => (
+                        <li key={idx}>{item.replace(/^[-*•]\s*/, "")}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {parsedSections?.nextChecks?.length > 0 && (
+                  <div className="ai-section">
+                    <span className="ai-section-title">RECOMMENDED NEXT CHECKS</span>
+                    <ol className="ai-checks-list">
+                      {parsedSections.nextChecks.map((item, idx) => (
+                        <li key={idx}>{item.replace(/^\d+[\.\)]\s*/, "")}</li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
+
+                <div className="ai-refresh-row">
+                  <button
+                    type="button"
+                    className="ai-refresh-button"
+                    onClick={handleGenerateInsight}
+                    disabled={insightLoading}
+                  >
+                    <span>↻</span> {insightLoading ? "REFRESHING..." : "RE-ANALYZE WITH CLAUDE"}
+                  </button>
+                </div>
               </div>
+            ) : (
+              <div className="ai-placeholder">
 
-              <p className="ai-eyebrow">
-                OPERATIONAL REASONING
-              </p>
+                <div className="ai-orbit">
+                  <div className="ai-core">AI</div>
+                </div>
 
-              <h4>
-                Narrative explanation is not available yet.
-              </h4>
+                <p className="ai-eyebrow">
+                  OPERATIONAL REASONING
+                </p>
 
-              <p className="ai-description">
-                A later Claude reasoning phase will use the
-                predictive output together with curated
-                operational evidence to explain why this grid
-                may require attention.
-              </p>
+                <h4>
+                  Evidence-grounded operational reasoning
+                </h4>
 
-              <button
-                type="button"
-                className="ai-button"
-                disabled
-              >
-                <span>✦</span>
-                EXPLAIN WITH AI
-              </button>
+                <p className="ai-description">
+                  Synthesize model risk signals, rolling telemetry baselines,
+                  and diurnal activity patterns into actionable NOC investigation guidance.
+                </p>
 
-              <small>
-                Available after the reasoning layer is integrated.
-              </small>
-            </div>
+                <button
+                  type="button"
+                  className="ai-button active-ready"
+                  onClick={handleGenerateInsight}
+                  disabled={insightLoading || !prediction}
+                >
+                  <span>✦</span>
+                  {insightLoading ? "ANALYZING EVIDENCE WITH CLAUDE..." : "EXPLAIN WITH AI"}
+                </button>
+
+                {insightError && (
+                  <div className="ai-error-box">
+                    <span>!</span>
+                    <small>{insightError}</small>
+                  </div>
+                )}
+
+                <small>
+                  Direct server-side Claude intelligence integration.
+                </small>
+              </div>
+            )}
 
             <div className="ai-boundary">
               <span>MODEL</span>
