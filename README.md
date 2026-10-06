@@ -26,16 +26,16 @@ The **Network Operations & Predictive Intelligence System** addresses these oper
 
 ## 2. Key Capabilities
 
-| Capability                          | Operational Purpose                                                                                              | Technology Stack                                            |
-| :---------------------------------- | :--------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------- |
-| **Data Ingestion & Quarantine**     | Automated discovery, schema enforcement, corrupt-row trapping, and rerun idempotency.                            | Python 3.12, CSV validation, hash tracking                  |
-| **Distributed Big Data Processing** | Parallel country-code aggregation and geospatial broadcast joins on Milan cell geometry.                         | PySpark 4.2.0, GeoPandas, Shapely                           |
-| **Analytical Star Warehouse**       | Relational dimension and fact storage enforcing strict operational grain uniqueness and busy-timeout protection. | SQLite 3 (`dim_time`, `dim_grid`, `fact_network_activity`)  |
-| **Pipeline Orchestration**          | Directed acyclic graph managing dependencies, retries, and machine-readable health telemetry.                    | Apache Airflow (`network_pipeline_dag.py`)                  |
-| **Operational Service Layer**       | RESTful analytical endpoints serving aggregate KPIs, cell drill-downs, feature vectors, and ML predictions.      | FastAPI 0.110.0, Pydantic, Uvicorn                          |
-| **Predictive Risk Modeling**        | Rolling temporal feature extraction and next-hour operational attention classification.                          | Scikit-learn (`DecisionTreeClassifier`, `ML3-v1`)           |
-| **Evidence-Grounded AI Reasoning**  | Server-side Claude invocation synthesizing structured numerical telemetry into actionable investigation briefs.  | Anthropic Claude SDK (`claude-sonnet-4-6`), MCP tool server |
-| **Interactive NOC Dashboard**       | Dark-mode operator interface with dynamic Leaflet choropleth maps, cell search, and on-demand AI explanation.    | React 18.2.0, Vite v8.2.2, Leaflet.js                       |
+| Capability                          | Operational Purpose                                                                                              | Technology Stack                                               |
+| :---------------------------------- | :--------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------- |
+| **Data Ingestion & Quarantine**     | Automated discovery, schema enforcement, corrupt-row trapping, and rerun idempotency.                            | Python 3.12, CSV validation, hash tracking                     |
+| **Distributed Big Data Processing** | Parallel country-code aggregation and geospatial broadcast joins on Milan cell geometry.                         | PySpark 4.2.0, GeoPandas, Shapely                              |
+| **Analytical Star Warehouse**       | Relational dimension and fact storage enforcing strict operational grain uniqueness and busy-timeout protection. | SQLite 3 (`dim\_time`, `dim\_grid`, `fact\_network\_activity`) |
+| **Pipeline Orchestration**          | Directed acyclic graph managing dependencies, retries, and machine-readable health telemetry.                    | Apache Airflow (`network\_pipeline\_dag.py`)                   |
+| **Operational Service Layer**       | RESTful analytical endpoints serving aggregate KPIs, cell drill-downs, feature vectors, and ML predictions.      | FastAPI 0.110.0, Pydantic, Uvicorn                             |
+| **Predictive Risk Modeling**        | Rolling temporal feature extraction and next-hour operational attention classification.                          | Scikit-learn (`DecisionTreeClassifier`, `ML3-v1`)              |
+| **Evidence-Grounded AI Reasoning**  | Server-side Claude invocation synthesizing structured numerical telemetry into actionable investigation briefs.  | Anthropic Claude SDK (`claude-sonnet-4-6`), MCP tool server    |
+| **Interactive NOC Dashboard**       | Dark-mode operator interface with dynamic Leaflet choropleth maps, cell search, and on-demand AI explanation.    | React 18.2.0, Vite v8.2.2, Leaflet.js                          |
 
 ---
 
@@ -127,7 +127,7 @@ PySpark rolls country-code records into a unified `(timestamp, grid_id)` operati
 
 ### 3. Engineer — Star Schema & Leak-Free Features
 
-Populates dimension and fact tables in SQLite. Computes rolling temporal features (`avg_activity`, `activity_growth`, `active_hours`, `peak_ratio`, `variability`, `internet_share`) strictly over historical intervals ($t-23 \dots t$) with mathematically verified zero forward leakage.
+Populates dimension and fact tables in SQLite. Computes rolling temporal features (`avg\_activity`, `activity\_growth`, `active\_hours`, `peak\_ratio`, `variability`, `internet\_share`) strictly over historical intervals ($t-23 \dots t$) with mathematically verified zero forward leakage.
 
 ### 4. Predict — Operational Attention Classification
 
@@ -174,7 +174,7 @@ The **Grid Explorer** provides deep-dive analytical investigation into individua
 
 * **Multi-Stream Activity Breakdown:** Visualizes proportional interaction curves across SMS In/Out, Call In/Out, and Data/Internet interactions.
 * **Historical Observation Table:** Displays hourly records with exact composite activity totals and internet volume share.
-* **Spatial Neighbor Context:** Leverages topological centroid queries (`/network/grid/{grid_id}/neighbours`) to identify surrounding cells and evaluate localized spillover.
+* **Spatial Neighbor Context:** Leverages topological centroid queries (`/network/grid/{grid\_id}/neighbours`) to identify surrounding cells and evaluate localized spillover.
 
 ---
 
@@ -187,17 +187,17 @@ The **Hotspots & Alerts** interface combines spatial geographic mapping with det
 ![Alert Investigation View](screenshots/alerts2.png)
 
 * **Interactive Milan Choropleth:** Color-ramps cell activity from low-intensity dark blue to elevated magenta, visually spotlighting active geographic sectors.
-* **Ranked Hotspot Table:** Orders cells by total activity volume at the designated `AS_OF` reporting timestamp.
+* **Ranked Hotspot Table:** Orders cells by total activity volume at the designated `AS\_OF` reporting timestamp.
 * **Deterministic Anomaly Alerts (NP3 Engine):**
 
-  * **Daily Activity Floor:** Excludes cells below the 10th percentile of total daily network activity (`ACTIVITY_FLOOR_PERCENTILE = 0.10`) to eliminate noisy low-volume artifacts.
+  * **Daily Activity Floor:** Excludes cells below the 10th percentile of total daily network activity (`ACTIVITY\_FLOOR\_PERCENTILE = 0.10`) to eliminate noisy low-volume artifacts.
   * **Within-Day Leave-One-Out Baseline:** Calculates the median activity across the other 23 hours of the same day for each cell, ensuring robust local baselines.
   * **Three Rule-Based Anomaly Detectors:**
 
-    * `HIGH_ACTIVITY`: Flags cells where current activity exceeds $1.5\times$ the within-day baseline (`HIGH_THRESHOLD = 1.5`).
-    * `ACTIVITY_DROP`: Flags cells where current activity drops below $0.5\times$ the within-day baseline (`DROP_THRESHOLD = 0.5`).
-    * `ACTIVITY_SPIKE`: Flags cells where current activity exceeds $2.0\times$ the preceding hour's activity (`SPIKE_THRESHOLD = 2.0`).
-  * **Operational Priority Mapping:** The interface filters alerts by rule type and maps `HIGH_ACTIVITY` and `ACTIVITY_SPIKE` to `HIGH` operational priority, and `ACTIVITY_DROP` to `ATTENTION`.
+    * `HIGH\_ACTIVITY`: Flags cells where current activity exceeds $1.5\times$ the within-day baseline (`HIGH\_THRESHOLD = 1.5`).
+    * `ACTIVITY\_DROP`: Flags cells where current activity drops below $0.5\times$ the within-day baseline (`DROP\_THRESHOLD = 0.5`).
+    * `ACTIVITY\_SPIKE`: Flags cells where current activity exceeds $2.0\times$ the preceding hour's activity (`SPIKE\_THRESHOLD = 2.0`).
+  * **Operational Priority Mapping:** The interface filters alerts by rule type and maps `HIGH\_ACTIVITY` and `ACTIVITY\_SPIKE` to `HIGH` operational priority, and `ACTIVITY\_DROP` to `ATTENTION`.
 * **Direct Investigation Handoff:** Clicking any cell polygon on the map or row in the alert table immediately deep-links the operator into the Grid Explorer for detailed investigation and contextual triage.
 
 ---
@@ -255,13 +255,13 @@ flowchart TD
 ### 1. Deterministic Analytics
 
 * Computes exact mathematical aggregates: total activity, moving means, peak ratios, and geographic centroids.
-* Evaluates rule-based alert conditions: 10th-percentile daily activity floor, leave-one-out within-day median baselines, and multi-threshold anomaly rules (`HIGH_ACTIVITY`, `ACTIVITY_DROP`, `ACTIVITY_SPIKE`).
+* Evaluates rule-based alert conditions: 10th-percentile daily activity floor, leave-one-out within-day median baselines, and multi-threshold anomaly rules (`HIGH\_ACTIVITY`, `ACTIVITY\_DROP`, `ACTIVITY\_SPIKE`).
 * Governed by relational database constraints and zero temporal leakage.
 
 ### 2. Predictive Machine Learning (`ML3-v1`)
 
 * Evaluates leak-free temporal feature vectors to predict the likelihood of elevated activity in the next hour ($t+1$).
-* Implements an interpretable `DecisionTreeClassifier` constrained by `criterion="entropy"`, `max_depth=7`, `min_samples_split=20`, `min_samples_leaf=10`, and `class_weight="balanced"`.
+* Implements an interpretable `DecisionTreeClassifier` constrained by `criterion="entropy"`, `max\_depth=7`, `min\_samples\_split=20`, `min\_samples\_leaf=10`, and `class\_weight="balanced"`.
 * Operates strictly as a **probabilistic attention signal**, not a confirmation of physical failure.
 * Returns structured numerical outputs: predicted risk probability (0.00 to 1.00) and operational attention level (`LOW`, `MEDIUM`, `HIGH`).
 
@@ -364,27 +364,27 @@ The repository organizes Claude capabilities into focused operational modules:
 
 ### Star Schema Architecture & Verified Row Counts
 
-The SQLite analytical warehouse (`data/warehouse/network_ops.db`) is structured as an analytical star schema:
+The SQLite analytical warehouse (`data/warehouse/network\_ops.db`) is structured as an analytical star schema:
 
-| Table Name              | Schema Type      | Verified Row Count | Key Columns                                                                      | Operational Description                                                     |
-| :---------------------- | :--------------- | :----------------: | :------------------------------------------------------------------------------- | :-------------------------------------------------------------------------- |
-| `dim_time`              | Dimension        |         168        | `time_key` (PK), `timestamp`, `hour`, `day_of_week`                              | 7 full days of hourly timestamps (2013-11-01 00:00 to 2013-11-07 23:00).    |
-| `dim_grid`              | Dimension        |       10,000       | `grid_key` (PK), `grid_id`, `centroid_latitude`, `centroid_longitude`            | 100x100 spatial grid cells covering the Milan metropolitan area.            |
-| `fact_network_activity` | Fact Table       |      1,679,994     | `time_key` (FK), `grid_key` (FK), `total_activity`, `internet_share`             | Cleaned hourly activity metrics; strictly unique on `(time_key, grid_key)`. |
-| `network_feature_table` | ML Feature Store |      1,439,887     | `grid_id`, `feature_timestamp`, `avg_activity`, `activity_growth`, `variability` | Rolling 24-hour backward feature matrix with zero forward leakage.          |
+| Table Name                | Schema Type      | Verified Row Count | Key Columns                                                                          | Operational Description                                                       |
+| :------------------------ | :--------------- | :----------------: | :----------------------------------------------------------------------------------- | :---------------------------------------------------------------------------- |
+| `dim\_time`               | Dimension        |         168        | `time\_key` (PK), `timestamp`, `hour`, `day\_of\_week`                               | 7 full days of hourly timestamps (2013-11-01 00:00 to 2013-11-07 23:00).      |
+| `dim\_grid`               | Dimension        |       10,000       | `grid\_key` (PK), `grid\_id`, `centroid\_latitude`, `centroid\_longitude`            | 100x100 spatial grid cells covering the Milan metropolitan area.              |
+| `fact\_network\_activity` | Fact Table       |      1,679,994     | `time\_key` (FK), `grid\_key` (FK), `total\_activity`, `internet\_share`             | Cleaned hourly activity metrics; strictly unique on `(time\_key, grid\_key)`. |
+| `network\_feature\_table` | ML Feature Store |      1,439,887     | `grid\_id`, `feature\_timestamp`, `avg\_activity`, `activity\_growth`, `variability` | Rolling 24-hour backward feature matrix with zero forward leakage.            |
 
 #### Mathematical Row-Count Alignment
 
-* `fact_network_activity` contains **1,679,994 rows** ($10,000 \text{ cells} \times 168 \text{ hours} = 1,680,000$, minus 6 missing grid-hours in raw data).
-* `network_feature_table` contains **1,439,887 rows**:
+* `fact\_network\_activity` contains **1,679,994 rows** ($10,000 \text{ cells} \times 168 \text{ hours} = 1,680,000$, minus 6 missing grid-hours in raw data).
+* `network\_feature\_table` contains **1,439,887 rows**:
 
-  * The first 23 hours (`2013-11-01 00:00` to `22:00`) are consumed by the rolling 24-hour window burn-in (`min_periods=24`).
-  * The final hour (`2013-11-07 23:00`) is excluded by the $t+1$ prediction horizon requirement (`has_valid_next_hour`).
+  * The first 23 hours (`2013-11-01 00:00` to `22:00`) are consumed by the rolling 24-hour window burn-in (`min\_periods=24`).
+  * The final hour (`2013-11-07 23:00`) is excluded by the $t+1$ prediction horizon requirement (`has\_valid\_next\_hour`).
   * Exactly 144 feature hours remain ($144 \times 10,000 = 1,440,000$, minus 113 missing grid-hour observations across historical windows).
 
 ### Pipeline Orchestration (Apache Airflow)
 
-The data lifecycle is orchestrated via Apache Airflow (`airflow/dags/network_pipeline_dag.py`):
+The data lifecycle is orchestrated via Apache Airflow (`airflow/dags/network\_pipeline\_dag.py`):
 
 ```mermaid
 flowchart LR
@@ -441,27 +441,27 @@ $$
 
 Features are constructed strictly from backward-looking windows ($t-23 \dots t$):
 
-* `avg_activity`: 24-hour rolling arithmetic mean.
-* `activity_growth`: Percentage change between recent 6-hour mean ($t-5 \dots t$) and prior 24-hour baseline ($t-29 \dots t-6$).
-* `active_hours`: Count of hours with non-zero activity in the past 24 hours.
-* `peak_ratio`: Ratio of the maximum activity in the past 24 hours to the 24-hour mean.
+* `avg\_activity`: 24-hour rolling arithmetic mean.
+* `activity\_growth`: Percentage change between recent 6-hour mean ($t-5 \dots t$) and prior 24-hour baseline ($t-29 \dots t-6$).
+* `active\_hours`: Count of hours with non-zero activity in the past 24 hours.
+* `peak\_ratio`: Ratio of the maximum activity in the past 24 hours to the 24-hour mean.
 * `variability`: Population standard deviation ($\sigma$) over the 24-hour window.
-* `internet_share`: Proportion of total activity attributed to internet interactions.
+* `internet\_share`: Proportion of total activity attributed to internet interactions.
 
 #### Temporal Leakage Verification
 
-The project includes an automated regression test (`ML/ML2/test_feature_engineering.py`) that injects extreme artificial activity spikes ($10,000\times$) at future timestamps $t+1 \dots t+6$. The recomputed feature vector at timestamp $t$ demonstrates **zero delta ($0.000000$)** across all features, proving complete mathematical isolation.
+The project includes an automated regression test (`ML/ML2/test\_feature\_engineering.py`) that injects extreme artificial activity spikes ($10,000\times$) at future timestamps $t+1 \dots t+6$. The recomputed feature vector at timestamp $t$ demonstrates **zero delta ($0.000000$)** across all features, proving complete mathematical isolation.
 
 ### Model Implementation
 
-* **Model Type:** Interpretable `DecisionTreeClassifier` (`criterion="entropy"`, `max_depth=7`, `min_samples_split=20`, `min_samples_leaf=10`, `class_weight="balanced"`, `random_state=42`).
+* **Model Type:** Interpretable `DecisionTreeClassifier` (`criterion="entropy"`, `max\_depth=7`, `min\_samples\_split=20`, `min\_samples\_leaf=10`, `class\_weight="balanced"`, `random\_state=42`).
 * **Model Version:** `ML3-v1`
-* **Artifact Path:** `ML/ML3/outputs/risk_classifier.pkl` (served on demand by FastAPI).
+* **Artifact Path:** `ML/ML3/outputs/risk\_classifier.pkl` (served on demand by FastAPI).
 * **Serving Thresholds:** Predictions return an uncalibrated risk probability mapped to operational attention tiers:
 
-  * `HIGH`: Probability $\ge 0.80`
-  * `MEDIUM`: Probability $\ge 0.40` and $< 0.80$
-  * `LOW`: Probability $< 0.40`
+  * `HIGH`: Probability $\ge 0.80$
+  * `MEDIUM`: Probability $\ge 0.40$ and $< 0.80$
+  * `LOW`: Probability $< 0.40$
 
 ---
 
@@ -469,18 +469,18 @@ The project includes an automated regression test (`ML/ML2/test_feature_engineer
 
 The FastAPI backend (`api/main.py`) provides 10 RESTful endpoints backed by read-only connection pooling against the analytics warehouse:
 
-| Endpoint                             | Method | Response Model           | Description                                                                                                  |
-| :----------------------------------- | :----: | :----------------------- | :----------------------------------------------------------------------------------------------------------- |
-| `/network/summary`                   |  `GET` | `NetworkSummaryResponse` | Global KPIs: total activity, active cells (10,000), peak hour, and `as_of`.                                  |
-| `/network/grid/{grid_id}`            |  `GET` | `GridActivityResponse`   | 24-hour historical time series partitioned into SMS, voice calls, and internet.                              |
-| `/network/hotspots`                  |  `GET` | `HotspotResponse`        | Top N cells ranked by total activity at a specified `as_of` timestamp.                                       |
-| `/network/alerts`                    |  `GET` | `AlertResponse`          | Active rule-based anomaly flags filtered by alert type (`HIGH_ACTIVITY`, `ACTIVITY_DROP`, `ACTIVITY_SPIKE`). |
-| `/network/grid/{grid_id}/features`   |  `GET` | `GridFeatureResponse`    | Stored ML2 feature vector (`avg_activity`, `activity_growth`, `variability`).                                |
-| `/network/predict-risk`              | `POST` | `PredictionResponse`     | On-demand Decision Tree inference returning probability and attention tier.                                  |
-| `/network/insight`                   | `POST` | `NetworkInsightResponse` | Curated evidence synthesis invoking Claude reasoning for structured operational triage.                      |
-| `/pipeline/status`                   |  `GET` | `PipelineStatusResponse` | Ingestion status, processed row counts, and warehouse data freshness.                                        |
-| `/network/grid/{grid_id}/location`   |  `GET` | `GridLocationResponse`   | Centroid coordinates and geometry reference for spatial mapping.                                             |
-| `/network/grid/{grid_id}/neighbours` |  `GET` | `GridNeighboursResponse` | Topological 8-neighbor cells for surrounding spatial spillover analysis.                                     |
+| Endpoint                              | Method | Response Model           | Description                                                                                                     |
+| :------------------------------------ | :----: | :----------------------- | :-------------------------------------------------------------------------------------------------------------- |
+| `/network/summary`                    |  `GET` | `NetworkSummaryResponse` | Global KPIs: total activity, active cells (10,000), peak hour, and `as\_of`.                                    |
+| `/network/grid/{grid\_id}`            |  `GET` | `GridActivityResponse`   | 24-hour historical time series partitioned into SMS, voice calls, and internet.                                 |
+| `/network/hotspots`                   |  `GET` | `HotspotResponse`        | Top N cells ranked by total activity at a specified `as\_of` timestamp.                                         |
+| `/network/alerts`                     |  `GET` | `AlertResponse`          | Active rule-based anomaly flags filtered by alert type (`HIGH\_ACTIVITY`, `ACTIVITY\_DROP`, `ACTIVITY\_SPIKE`). |
+| `/network/grid/{grid\_id}/features`   |  `GET` | `GridFeatureResponse`    | Stored ML2 feature vector (`avg\_activity`, `activity\_growth`, `variability`).                                 |
+| `/network/predict-risk`               | `POST` | `PredictionResponse`     | On-demand Decision Tree inference returning probability and attention tier.                                     |
+| `/network/insight`                    | `POST` | `NetworkInsightResponse` | Curated evidence synthesis invoking Claude reasoning for structured operational triage.                         |
+| `/pipeline/status`                    |  `GET` | `PipelineStatusResponse` | Ingestion status, processed row counts, and warehouse data freshness.                                           |
+| `/network/grid/{grid\_id}/location`   |  `GET` | `GridLocationResponse`   | Centroid coordinates and geometry reference for spatial mapping.                                                |
+| `/network/grid/{grid\_id}/neighbours` |  `GET` | `GridNeighboursResponse` | Topological 8-neighbor cells for surrounding spatial spillover analysis.                                        |
 
 ### The `/network/insight` Contract
 
@@ -624,16 +624,16 @@ Network Operations Predictive System/
 
 All core subsystems undergo automated verification to prove functional correctness and architectural compliance:
 
-| Test Suite / Component                | Verification Command                           |  Status  | Scope & Proof                                                                               |
-| :------------------------------------ | :--------------------------------------------- | :------: | :------------------------------------------------------------------------------------------ |
-| **Network Summary API (API1)**        | `python api/test_api1.py`                      | **PASS** | Asserts global aggregate metrics, ISO timestamps, and HTTP 200 contract.                    |
-| **Grid Activity History API (API2)**  | `python api/test_api2.py`                      | **PASS** | Validates 24h history bounds, non-negative interaction measures, and 404 handling.          |
-| **Data Ingestion & Quarantine (DE)**  | `python -m unittest tests/test_ingestion.py`   | **PASS** | 7/7 tests pass: schema validation, corrupt line quarantine, and rerun idempotency.          |
-| **ML Forward Temporal Leakage (ML2)** | `python ML/ML2/test_feature_engineering.py`    | **PASS** | Proves mathematical 0.000000 delta after future activity spike injection ($t+1 \dots t+6$). |
-| **Claude Team Plugin & Guardrails**   | `python claude/C13/team_plugin.py`             | **PASS** | Verifies clean workspace installation, slash commands, and Rule #4 enforcement.             |
-| **Rule #4 Congestion Guardrail**      | `python claude/C4/repository_understanding.py` | **PASS** | Confirms programmatic refusal to infer congestion from non-capacity telemetry.              |
-| **Frontend Build**                    | `npm run build` (in `frontend/`)               | **PASS** | Vite transforms 64 modules with 0 errors in under 700ms.                                    |
-| **Live Claude Insight Endpoint**      | `POST /network/insight`                        | **PASS** | HTTP 200 OK returning assessed severity, structured evidence, and Claude brief.             |
+| Test Suite / Component                | Verification Command                            |  Status  | Scope & Proof                                                                               |
+| :------------------------------------ | :---------------------------------------------- | :------: | :------------------------------------------------------------------------------------------ |
+| **Network Summary API (API1)**        | `python api/test\_api1.py`                      | **PASS** | Asserts global aggregate metrics, ISO timestamps, and HTTP 200 contract.                    |
+| **Grid Activity History API (API2)**  | `python api/test\_api2.py`                      | **PASS** | Validates 24h history bounds, non-negative interaction measures, and 404 handling.          |
+| **Data Ingestion & Quarantine (DE)**  | `python -m unittest tests/test\_ingestion.py`   | **PASS** | 7/7 tests pass: schema validation, corrupt line quarantine, and rerun idempotency.          |
+| **ML Forward Temporal Leakage (ML2)** | `python ML/ML2/test\_feature\_engineering.py`   | **PASS** | Proves mathematical 0.000000 delta after future activity spike injection ($t+1 \dots t+6$). |
+| **Claude Team Plugin & Guardrails**   | `python claude/C13/team\_plugin.py`             | **PASS** | Verifies clean workspace installation, slash commands, and Rule #4 enforcement.             |
+| **Rule #4 Congestion Guardrail**      | `python claude/C4/repository\_understanding.py` | **PASS** | Confirms programmatic refusal to infer congestion from non-capacity telemetry.              |
+| **Frontend Build**                    | `npm run build` (in `frontend/`)                | **PASS** | Vite transforms 64 modules with 0 errors in under 700ms.                                    |
+| **Live Claude Insight Endpoint**      | `POST /network/insight`                         | **PASS** | HTTP 200 OK returning assessed severity, structured evidence, and Claude brief.             |
 
 ---
 
@@ -730,10 +730,10 @@ To preserve strict domain validity, all components adhere to the project data co
 * Geospatial joins with `data/reference/milano-grid.geojson` must strictly match on `feature.properties.cellId`.
 * Joining on the zero-based GeoJSON array index `id` introduces a systematic geographic offset and is strictly prohibited.
 
-### 4. The `AS_OF` Temporal Convention
+### 4. The `AS\_OF` Temporal Convention
 
-* The system operates over historical batch intervals where "now" is defined by the `AS_OF` parameter.
-* All rolling baselines, feature windows, and hotspot queries calculate temporal windows strictly relative to `AS_OF`, excluding any observations timestamped $> \text{AS_OF}$ to prevent data leakage.
+* The system operates over historical batch intervals where "now" is defined by the `AS\_OF` parameter.
+* All rolling baselines, feature windows, and hotspot queries calculate temporal windows strictly relative to `AS\_OF`, excluding any observations timestamped $> \text{AS_OF}$ to prevent data leakage.
 
 ### 5. Operator-in-the-Loop Triage
 
